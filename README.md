@@ -1,3 +1,4 @@
+![CI](https://github.com/ladislav-lettovsky/ai-toolkit/actions/workflows/ci.yml/badge.svg)
 # ai-toolkit
 
 A local-first AI project toolkit for creating and managing agent and RAG projects.
