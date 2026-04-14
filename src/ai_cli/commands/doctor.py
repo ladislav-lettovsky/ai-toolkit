@@ -1,10 +1,9 @@
 import json
-from pathlib import Path
 
 import click
 from dotenv import dotenv_values
 
-PROJECTS_ROOT = Path("~/projects/ai").expanduser()
+from ai_cli.constants import PROJECTS_ROOT
 
 
 @click.command()

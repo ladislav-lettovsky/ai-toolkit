@@ -1,23 +1,12 @@
-import json
-from pathlib import Path
-
 import click
 
-PROJECTS_ROOT = Path("~/projects/ai").expanduser()
+from ai_cli.constants import PROJECTS_ROOT
+from ai_cli.utils import load_json
 
 
-def load_json(path: Path):
-    if not path.exists():
-        return None
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError:
-        return None
-
-
-@click.command()
+@click.command("inspect")
 @click.argument("name")
-def inspect(name: str) -> None:
+def inspect_project(name: str) -> None:
     """Inspect an AI project"""
     project_path = PROJECTS_ROOT / name
 
@@ -103,7 +92,7 @@ def inspect(name: str) -> None:
 
         click.echo(f"  document files: {doc_count}")
         click.echo(f"  indexed chunks: {chunk_count}")
-        click.echo(f"  top_k: {config.get('top_k', '<unset>')}")
+        click.echo(f"  top_k: {config.get('top_k', '<unset>') if isinstance(config, dict) else '<unset>'}")
     else:
         memory_count = 0
         if memory_file.exists():
@@ -127,7 +116,7 @@ def inspect(name: str) -> None:
 
     click.echo("")
     click.echo("Config:")
-    if not config:
+    if not config or not isinstance(config, dict):
         click.echo("  <none>")
     else:
         for key, value in config.items():

@@ -2,9 +2,9 @@ import click
 
 from ai_cli.commands.clean import clean
 from ai_cli.commands.doctor import doctor
-from ai_cli.commands.eval import eval
-from ai_cli.commands.inspect import inspect
-from ai_cli.commands.list import list
+from ai_cli.commands.eval import eval_project
+from ai_cli.commands.inspect import inspect_project
+from ai_cli.commands.list import list_projects
 from ai_cli.commands.new import new
 from ai_cli.commands.run import run
 from ai_cli.commands.templates import templates
@@ -19,9 +19,9 @@ def cli():
 
 cli.add_command(clean)
 cli.add_command(doctor)
-cli.add_command(eval)
-cli.add_command(inspect)
-cli.add_command(list)
+cli.add_command(eval_project)
+cli.add_command(inspect_project)
+cli.add_command(list_projects)
 cli.add_command(new)
 cli.add_command(run)
 cli.add_command(templates)

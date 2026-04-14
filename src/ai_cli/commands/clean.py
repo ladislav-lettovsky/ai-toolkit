@@ -1,8 +1,7 @@
-from pathlib import Path
-
 import click
 
-PROJECTS_ROOT = Path("~/projects/ai").expanduser()
+from ai_cli.constants import PROJECTS_ROOT
+from ai_cli.utils import load_json
 
 
 @click.command()
@@ -19,11 +18,20 @@ def clean(name: str, notes: bool) -> None:
     if not project_path.is_dir():
         raise click.ClickException(f"Project not found: {project_path}")
 
+    # Detect project type from metadata
+    metadata_file = project_path / ".ai-project.json"
+    metadata = load_json(metadata_file)
+    if isinstance(metadata, dict) and metadata.get("project_type") == "rag":
+        project_type = "rag"
+    else:
+        project_type = "agent"
+
+    removed: list[str] = []
+
+    # --- Agent state files ---
     memory_file = project_path / "data" / "memory.json"
     runs_file = project_path / "data" / "runs.jsonl"
     notes_dir = project_path / "notes"
-
-    removed = []
 
     if memory_file.exists():
         memory_file.unlink()
@@ -38,6 +46,13 @@ def clean(name: str, notes: bool) -> None:
             if path.is_file():
                 path.unlink()
                 removed.append(str(path))
+
+    # --- RAG state files ---
+    if project_type == "rag":
+        index_file = project_path / "data" / "index" / "chunks.json"
+        if index_file.exists():
+            index_file.unlink()
+            removed.append(str(index_file))
 
     click.echo(f"🧹 Cleaned project: {name}")
     if removed:

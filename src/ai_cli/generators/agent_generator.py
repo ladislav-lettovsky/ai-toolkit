@@ -1,6 +1,9 @@
 import os
 import shutil
 import subprocess
+from pathlib import Path
+
+from ai_cli.constants import TEMPLATES_DIR
 
 
 def create_agent(name: str, base_path: str) -> None:
@@ -22,9 +25,7 @@ def create_agent(name: str, base_path: str) -> None:
     os.makedirs(os.path.join(target, "data"), exist_ok=True)
     os.makedirs(os.path.join(target, "notes"), exist_ok=True)
 
-    template_src = os.path.expanduser(
-        "~/projects/ai-toolkit/src/ai_cli/templates/agent/agent.py"
-    )
+    template_src = TEMPLATES_DIR / "agent" / "agent.py"
     shutil.copy(template_src, os.path.join(target, "src", module_name, "agent.py"))
 
     with open(os.path.join(target, "src", module_name, "__init__.py"), "w") as f:

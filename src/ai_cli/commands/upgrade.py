@@ -1,18 +1,9 @@
 import json
-from pathlib import Path
 
 import click
 
-PROJECTS_ROOT = Path("~/projects/ai").expanduser()
-
-
-def load_json(path: Path):
-    if not path.exists():
-        return None
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError:
-        return None
+from ai_cli.constants import PROJECTS_ROOT
+from ai_cli.utils import load_json
 
 
 @click.command()
@@ -37,7 +28,7 @@ def upgrade(name: str) -> None:
     else:
         metadata = {}
 
-    if metadata.get("project_type") in {"agent", "rag"}:
+    if isinstance(metadata, dict) and metadata.get("project_type") in {"agent", "rag"}:
         project_type = metadata["project_type"]
     else:
         if ingest_file.exists():
@@ -74,7 +65,7 @@ def upgrade(name: str) -> None:
 
     click.echo(f"⬆ Upgraded project: {name}")
     click.echo(f"  detected type: {project_type}")
-    click.echo(f"  template version: {metadata.get('template_version', '<unknown>')}")
+    click.echo(f"  template version: {metadata.get('template_version', '<unknown>') if isinstance(metadata, dict) else '<unknown>'}")
 
     if changes:
         for change in changes:
