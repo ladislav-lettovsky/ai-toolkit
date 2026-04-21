@@ -1,0 +1,53 @@
+---
+description: Scaffolder-vs-product-code boundary rules for ai-toolkit. Load when touching src/ai_cli/commands/, src/ai_cli/generators/, src/ai_cli/templates/, or pyproject.toml.
+globs: src/ai_cli/**/*.py, pyproject.toml, src/ai_cli/templates/**
+---
+
+# Scaffolder conventions
+
+`ai-toolkit` is a code generator, not an application. The hardest mistakes
+come from confusing scaffolder code with the product code it emits.
+
+## The two-axis mental model
+
+| Axis             | Scaffolder code                          | Product code (templates)              |
+|------------------|------------------------------------------|---------------------------------------|
+| Location         | `src/ai_cli/{main,commands,generators}/` | `src/ai_cli/templates/<name>/`        |
+| Runtime          | Runs when user invokes `ai-cli`          | Runs when user runs the generated app |
+| Imports visible? | Yes — scaffolder imports them            | No — verbatim text until rendered     |
+| Type-checked?    | Yes (`ty check`)                         | No (excluded via `[tool.ty.src]`)     |
+| Dependencies     | Scaffolder's `pyproject.toml`            | Template's own `pyproject.toml`       |
+
+When a rule feels ambiguous, re-derive the answer from this table.
+
+## Adding a new CLI command
+1. `src/ai_cli/commands/<name>.py` exposing a Click command
+2. Import and register in `src/ai_cli/main.py`
+3. Extend the `expected` set in `tests/test_cli_structure.py::test_cli_group_has_all_commands`
+4. Update `AGENTS.md` invariant #3 — the 9-command list is load-bearing
+
+## Adding a new template
+1. Files under `src/ai_cli/templates/<name>/` — product code
+2. `src/ai_cli/generators/<name>_generator.py`
+3. Register in `src/ai_cli/commands/templates.py` (the `TEMPLATES` dict)
+4. Template's dependencies go in the template's own `pyproject.toml`, never in
+   the scaffolder's
+
+## Path constants
+`PROJECTS_ROOT` and `TEMPLATES_DIR` live in `ai_cli.constants`. Always route
+through that module so tests can monkeypatch it — see
+`tests/test_cli_structure.py::test_list_handles_missing_directory` for the
+pattern (monkeypatch the constant on **both** `ai_cli.constants` and the
+importing module).
+
+## Imports
+Absolute imports only: `from ai_cli.commands.new import new`, never
+`from .new import new`. Enforced by ruff.
+
+## If a `ty` error fires in a template file
+This is expected behavior, not a bug. Templates import packages (`openai`,
+`langgraph`, etc.) that the scaffolder does not depend on. Add or verify the
+path exclusion in `[tool.ty.src].exclude`; do not "fix" the import.
+
+## See also
+@AGENTS.md

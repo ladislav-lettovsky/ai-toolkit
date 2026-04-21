@@ -1,0 +1,52 @@
+---
+description: Core conventions for ai-toolkit (always active)
+alwaysApply: true
+---
+
+# Core conventions — always on
+
+## Source of truth for style and quality
+Linting, formatting, and type checks are enforced by the repo's tooling,
+not restated here. Consult these files instead of guessing:
+- `pyproject.toml` — ruff + ty configuration
+- `.pre-commit-config.yaml` — local commit gate
+- `.github/workflows/ci.yml` — CI gate
+- `justfile` — canonical commands
+
+## Commands — use `just`, not raw tools
+- `just fmt` — format
+- `just lint` — lint (use `just lint-fix` to auto-fix)
+- `just type` — type check (uses Astral's `ty`, not mypy)
+- `just test` — run tests
+- `just check` — full quality gate (what CI runs)
+
+Prefer `just` recipes over invoking `uv run ruff`, `uv run ty`, etc. directly —
+the recipes are the contract between dev machines and CI.
+
+## This repo is a scaffolder, not a library
+`ai-toolkit` generates other AI projects; it does not run their code.
+Files under `src/ai_cli/templates/` are **product code** rendered verbatim
+into `~/projects/ai/<name>/`. Do not import them, execute them, or add
+their dependencies to this repo's `pyproject.toml`. See `AGENTS.md`
+invariants #1 and #2.
+
+## Before claiming a change is done
+1. `just check` passes locally
+2. Any new CLI command is registered in `main.py` and asserted in
+   `tests/test_cli_structure.py`
+3. No new dependencies added to the scaffolder's `pyproject.toml` unless
+   the scaffolder itself imports them
+4. Diff looks like what you'd want in a PR review
+
+## Branch and commit discipline
+- Never commit directly to `main`
+- Branches: `feat/<name>`, `fix/<name>`, `refactor/<name>`, `chore/<name>`, `docs/<name>`, `test/<name>`
+- Conventional Commits format for messages
+- One logical change per commit
+
+## Ephemeral / scratch work
+- Use `.scratch/` at repo root for throwaway files (git-ignored)
+- Never place exploratory scripts at repo root
+
+## See also
+@AGENTS.md
