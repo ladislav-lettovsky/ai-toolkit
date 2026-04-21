@@ -29,15 +29,13 @@ def inspect_project(name: str) -> None:
     runs_file = project_path / "data" / "runs.jsonl"
     notes_dir = project_path / "notes"
 
-    metadata = load_json(metadata_file)
-    if metadata is None:
-        metadata = {}
+    raw_metadata = load_json(metadata_file)
+    metadata: dict = raw_metadata if isinstance(raw_metadata, dict) else {}
 
-    config = load_json(config_file)
-    if config is None:
-        config = {}
+    raw_config = load_json(config_file)
+    config: dict = raw_config if isinstance(raw_config, dict) else {}
 
-    if isinstance(metadata, dict) and metadata.get("project_type") in {"agent", "rag"}:
+    if metadata.get("project_type") in {"agent", "rag"}:
         project_type = metadata["project_type"]
     else:
         is_rag = ingest_file.exists() and index_file.parent.exists()
@@ -85,22 +83,18 @@ def inspect_project(name: str) -> None:
         chunk_count = 0
         if index_file.exists():
             index_data = load_json(index_file)
-            if isinstance(index_data, list):
-                chunk_count = len(index_data)
-            else:
-                chunk_count = -1
+            chunk_count = len(index_data) if isinstance(index_data, list) else -1
 
         click.echo(f"  document files: {doc_count}")
         click.echo(f"  indexed chunks: {chunk_count}")
-        click.echo(f"  top_k: {config.get('top_k', '<unset>') if isinstance(config, dict) else '<unset>'}")
+        click.echo(
+            f"  top_k: {config.get('top_k', '<unset>') if isinstance(config, dict) else '<unset>'}"
+        )
     else:
         memory_count = 0
         if memory_file.exists():
             memory_data = load_json(memory_file)
-            if isinstance(memory_data, list):
-                memory_count = len(memory_data)
-            else:
-                memory_count = -1
+            memory_count = len(memory_data) if isinstance(memory_data, list) else -1
 
         runs_count = 0
         if runs_file.exists():

@@ -24,12 +24,12 @@ def create_rag_project(name: str, base_path: str) -> None:
 
     with open(os.path.join(target, ".ai-project.json"), "w") as f:
         f.write(
-            '''{
+            """{
   "project_type": "rag",
   "template_version": "1.0",
   "created_by": "ai-toolkit"
 }
-'''
+"""
         )
 
     with open(os.path.join(target, "src", module_name, "__init__.py"), "w") as f:
@@ -37,7 +37,7 @@ def create_rag_project(name: str, base_path: str) -> None:
 
     with open(os.path.join(target, "src", module_name, "retriever.py"), "w") as f:
         f.write(
-            '''import json
+            """import json
 from pathlib import Path
 
 
@@ -61,12 +61,12 @@ def retrieve(query: str, index_path: Path, top_k: int = 3) -> list[dict]:
 
     scored.sort(key=lambda x: x[0], reverse=True)
     return [chunk for _, chunk in scored[:top_k]]
-'''
+"""
         )
 
     with open(os.path.join(target, "src", module_name, "agent.py"), "w") as f:
         f.write(
-            '''import json
+            """import json
 import os
 from pathlib import Path
 
@@ -125,12 +125,12 @@ class RagAgent:
             ],
         )
         return response.output_text
-'''
+"""
         )
 
     with open(os.path.join(target, "scripts", "ingest.py"), "w") as f:
         f.write(
-            f'''import json
+            """import json
 from pathlib import Path
 
 
@@ -155,22 +155,22 @@ def main() -> None:
         text = path.read_text(encoding="utf-8")
         for idx, chunk in enumerate(chunk_text(text), start=1):
             all_chunks.append(
-                {{
+                {
                     "source": path.name,
                     "chunk_id": idx,
                     "text": chunk,
-                }}
+                }
             )
 
     with INDEX_PATH.open("w", encoding="utf-8") as f:
         json.dump(all_chunks, f, indent=2)
 
-    print(f"Indexed {{len(all_chunks)}} chunks into {{INDEX_PATH}}")
+    print(f"Indexed {len(all_chunks)} chunks into {INDEX_PATH}")
 
 
 if __name__ == "__main__":
     main()
-'''
+"""
         )
 
     with open(os.path.join(target, "scripts", "run.py"), "w") as f:
@@ -216,12 +216,7 @@ if __name__ == "__main__":
         f.write("OPENAI_API_KEY=your-api-key-here\n")
 
     with open(os.path.join(target, ".gitignore"), "w") as f:
-        f.write(
-            ".venv/\n"
-            ".env\n"
-            "__pycache__/\n"
-            "*.pyc\n"
-        )
+        f.write(".venv/\n.env\n__pycache__/\n*.pyc\n")
 
     with open(os.path.join(target, "README.md"), "w") as f:
         f.write(
@@ -232,12 +227,12 @@ if __name__ == "__main__":
             "3. Run queries\n\n"
             "## Commands\n\n"
             "    uv run python scripts/ingest.py\n"
-            "    uv run python scripts/run.py --query \"your question here\"\n"
+            '    uv run python scripts/run.py --query "your question here"\n'
         )
 
     with open(os.path.join(target, "tests", "test_rag.py"), "w") as f:
         f.write(
-            f'''import json
+            f"""import json
 from pathlib import Path
 
 from {module_name}.retriever import retrieve
@@ -255,7 +250,7 @@ def test_retrieve_returns_matching_chunks(tmp_path: Path):
 
     assert len(results) >= 1
     assert results[0]["source"] == "a.txt"
-'''
+"""
         )
 
     with open(os.path.join(target, "data", "docs", "welcome.txt"), "w") as f:

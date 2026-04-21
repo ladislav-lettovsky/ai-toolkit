@@ -5,9 +5,7 @@ import click
 from ai_cli.constants import PROJECTS_ROOT
 
 
-@click.command(
-    context_settings={"ignore_unknown_options": True, "allow_extra_args": True}
-)
+@click.command(context_settings={"ignore_unknown_options": True, "allow_extra_args": True})
 @click.argument("name")
 @click.pass_context
 def run(ctx: click.Context, name: str) -> None:

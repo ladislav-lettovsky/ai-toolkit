@@ -16,25 +16,17 @@ def upgrade(name: str) -> None:
         raise click.ClickException(f"Project not found: {project_path}")
 
     metadata_file = project_path / ".ai-project.json"
-    config_file = project_path / "config.json"
     ingest_file = project_path / "scripts" / "ingest.py"
     notes_dir = project_path / "notes"
     gitignore_file = project_path / ".gitignore"
 
-    config = load_json(config_file) or {}
+    metadata_raw = load_json(metadata_file) if metadata_file.exists() else {}
+    metadata = metadata_raw if isinstance(metadata_raw, dict) else {}
 
-    if metadata_file.exists():
-        metadata = load_json(metadata_file) or {}
-    else:
-        metadata = {}
-
-    if isinstance(metadata, dict) and metadata.get("project_type") in {"agent", "rag"}:
+    if metadata.get("project_type") in {"agent", "rag"}:
         project_type = metadata["project_type"]
     else:
-        if ingest_file.exists():
-            project_type = "rag"
-        else:
-            project_type = "agent"
+        project_type = "rag" if ingest_file.exists() else "agent"
 
     changes = []
 
@@ -65,7 +57,9 @@ def upgrade(name: str) -> None:
 
     click.echo(f"⬆ Upgraded project: {name}")
     click.echo(f"  detected type: {project_type}")
-    click.echo(f"  template version: {metadata.get('template_version', '<unknown>') if isinstance(metadata, dict) else '<unknown>'}")
+    click.echo(
+        f"  template version: {metadata.get('template_version', '<unknown>') if isinstance(metadata, dict) else '<unknown>'}"
+    )
 
     if changes:
         for change in changes:
