@@ -1,8 +1,9 @@
 import json
 import os
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -213,7 +214,8 @@ class BaseAgent:
                 "type": "function",
                 "name": name,
                 "description": description,
-                "parameters": parameters or {
+                "parameters": parameters
+                or {
                     "type": "object",
                     "properties": {},
                     "required": [],

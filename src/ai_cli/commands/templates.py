@@ -1,6 +1,5 @@
 import click
 
-
 TEMPLATES = {
     "agent": "Tool-using local agent with memory, logs, evals, and safe note writing",
     "rag": "Local retrieval-augmented generation project with ingestion and querying",

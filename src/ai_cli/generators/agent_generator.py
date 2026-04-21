@@ -1,7 +1,6 @@
 import os
 import shutil
 import subprocess
-from pathlib import Path
 
 from ai_cli.constants import TEMPLATES_DIR
 
@@ -50,23 +49,16 @@ def create_agent(name: str, base_path: str) -> None:
         f.write("OPENAI_API_KEY=your-api-key-here\n")
 
     with open(os.path.join(target, ".gitignore"), "w") as f:
-        f.write(
-            ".venv/\n"
-            ".env\n"
-            "__pycache__/\n"
-            "*.pyc\n"
-            "data/memory.json\n"
-            "data/runs.jsonl\n"
-        )
+        f.write(".venv/\n.env\n__pycache__/\n*.pyc\ndata/memory.json\ndata/runs.jsonl\n")
 
     with open(os.path.join(target, ".ai-project.json"), "w") as f:
         f.write(
-            '''{
+            """{
   "project_type": "agent",
   "template_version": "1.0",
   "created_by": "ai-toolkit"
 }
-'''
+"""
         )
 
     with open(os.path.join(target, "pyproject.toml"), "w") as f:
