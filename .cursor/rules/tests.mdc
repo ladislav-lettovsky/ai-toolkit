@@ -1,0 +1,42 @@
+---
+description: Test conventions for pytest-based tests in ai-toolkit
+globs: tests/**/*.py
+---
+
+# Test conventions
+
+## Canonical commands
+- Run all tests: `just test` (wraps `uv run pytest`)
+- Full quality gate: `just check` (pre-commit + ty + pytest)
+
+## Scope: structural, not behavioral
+The scaffolder's tests exercise **structure**, not generated-project behavior:
+- Command registration (`test_cli_group_has_all_commands`)
+- Template enumeration (`test_templates_contains_*`)
+- CLI entry points behave correctly given a tmp directory
+
+Tests that exercise a *generated project's* runtime behavior belong in the
+generated project's own test suite, not here. See `AGENTS.md` invariant #4.
+
+## Zero secrets, zero network
+A test that requires `OPENAI_API_KEY` or makes a network call is almost
+certainly in the wrong repo. If you need to test something that touches an
+LLM, that test belongs in the target template's generated project, not in
+`ai-toolkit/tests/`.
+
+## File and class structure
+- Use `click.testing.CLIRunner` for CLI tests, mirroring
+  `tests/test_cli_structure.py`
+- Module docstrings and `def test_*` functions; no `unittest.TestCase`
+- When monkeypatching module-level constants (e.g., `PROJECTS_ROOT`),
+  patch on **both** `ai_cli.constants` **and** the importing module — see
+  `test_list_handles_missing_directory`
+
+## When adding a new test
+- A new CLI command → add a test to `test_cli_structure.py` asserting it
+  appears in the `expected` set
+- A new template → add a `test_templates_contains_<name>` test
+- A new public helper in `ai_cli.utils` → add a matching `test_utils.py` test
+
+## See also
+@AGENTS.md
