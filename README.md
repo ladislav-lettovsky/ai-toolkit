@@ -1,5 +1,7 @@
-![CI](https://github.com/ladislav-lettovsky/ai-toolkit/actions/workflows/ci.yml/badge.svg)
 # ai-toolkit
+
+![CI](https://github.com/ladislav-lettovsky/ai-toolkit/actions/workflows/ci.yml/badge.svg)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ladislav-lettovsky/ai-toolkit)
 
 A local-first CLI scaffolder for creating and managing AI agent and RAG
 projects. `ai-toolkit` generates standalone Python projects under
